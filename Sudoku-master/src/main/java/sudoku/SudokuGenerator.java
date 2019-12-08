@@ -1,69 +1,75 @@
-package sudoku;
+package sudokuGame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class SudokuGenerator {
-
-	public SudokuPuzzle generateRandomSudoku(SudokuPuzzleType puzzleType) {
-		SudokuPuzzle puzzle = new SudokuPuzzle(puzzleType.getRows(), puzzleType.getColumns(), puzzleType.getBoxWidth(), puzzleType.getBoxHeight(), puzzleType.getValidValues());
+public class SudokuGenerator 
+{
+	public SudokuPuzzle generateRandomSudoku() 
+	{
+		SudokuPuzzle puzzle = new SudokuPuzzle();
 		SudokuPuzzle copy = new SudokuPuzzle(puzzle);
 		
 		Random randomGenerator = new Random();
 		
-		List<String> notUsedValidValues =  new ArrayList<String>(Arrays.asList(copy.getValidValues()));
-		for(int r = 0;r < copy.getNumRows();r++) {
+		List<String> notUsedValidValues =  new ArrayList<String>(Arrays.asList(copy.getValidNumbers()));
+		for(int r = 0;r < copy.getRows();r++) 
+		{
 			int randomValue = randomGenerator.nextInt(notUsedValidValues.size());
-			copy.makeMove(r, 0, notUsedValidValues.get(randomValue), true);
+			copy.makeMove(notUsedValidValues.get(randomValue), 0, r, true);
 			notUsedValidValues.remove(randomValue);
 		}
 		
-		//Bottleneck here need to improve this so that way 16x16 puzzles can be generated
-		backtrackSudokuSolver(0, 0, copy);
+		recursiveSudokuSolver(copy, 0, 0);
 		
-		int numberOfValuesToKeep = (int)(0.22222*(copy.getNumRows()*copy.getNumRows()));
+		int numberOfValuesToKeep = (int)(0.33333*(copy.getRows()*copy.getRows()));
 		
-		for(int i = 0;i < numberOfValuesToKeep;) {
-			int randomRow = randomGenerator.nextInt(puzzle.getNumRows());
-			int randomColumn = randomGenerator.nextInt(puzzle.getNumColumns());
+		for(int i = 0;i < numberOfValuesToKeep;) 
+		{
+			int randomRow = randomGenerator.nextInt(puzzle.getRows());
+			int randomColumn = randomGenerator.nextInt(puzzle.getCols());
 			
-			if(puzzle.isSlotAvailable(randomRow, randomColumn)) {
-				puzzle.makeMove(randomRow, randomColumn, copy.getValue(randomRow, randomColumn), false);
+			if(puzzle.isSlotAvailable(randomColumn, randomRow)) 
+			{
+				puzzle.makeMove(copy.getValue(randomColumn, randomRow), randomColumn, randomRow, false);
 				i++;
 			}
 		}
-		
 		return puzzle;
 	}
 	
 	/**
 	 * Solves the sudoku puzzle
-	 * Pre-cond: r = 0,c = 0
+	 * Pre-cond: c = 0,r = 0
 	 * Post-cond: solved puzzle
 	 * @param r: the current row
 	 * @param c: the current column
 	 * @return valid move or not or done
 	 * Responses: Erroneous data 
 	 */
-    private boolean backtrackSudokuSolver(int r,int c,SudokuPuzzle puzzle) {
+    private boolean recursiveSudokuSolver(SudokuPuzzle puzzle, int c,int r) 
+    {
     	//If the move is not valid return false
-		if(!puzzle.inRange(r,c)) {
+		if(!puzzle.inRange(c,r)) 
+		{
 			return false;
 		}
 		
 		//if the current space is empty
-		if(puzzle.isSlotAvailable(r, c)) {
+		if(puzzle.isSlotAvailable(c, r)) 
+		{
 			
 			//loop to find the correct value for the space
-			for(int i = 0;i < puzzle.getValidValues().length;i++) {
+			for(int i = 0;i < puzzle.getValidNumbers().length;i++) 
+			{
 				
 				//if the current number works in the space
-				if(!puzzle.numInRow(r, puzzle.getValidValues()[i]) && !puzzle.numInCol(c,puzzle.getValidValues()[i]) && !puzzle.numInBox(r,c,puzzle.getValidValues()[i])) {
+				if(!puzzle.numInRow(puzzle.getValidNumbers()[i], r) && !puzzle.numInCol(puzzle.getValidNumbers()[i], c) && !puzzle.numInBox(puzzle.getValidNumbers()[i], c, r)) {
 					
 					//make the move
-					puzzle.makeMove(r, c, puzzle.getValidValues()[i], true);
+					puzzle.makeMove(puzzle.getValidNumbers()[i], c, r, true);
 					
 					//if puzzle solved return true
 					if(puzzle.boardFull()) {
@@ -71,10 +77,10 @@ public class SudokuGenerator {
 					}
 					
 					//go to next move
-					if(r == puzzle.getNumRows() - 1) {
-						if(backtrackSudokuSolver(0,c + 1,puzzle)) return true;
+					if(r == puzzle.getRows() - 1) {
+						if(recursiveSudokuSolver(puzzle, c + 1, 0)) return true;
 					} else {
-						if(backtrackSudokuSolver(r + 1,c,puzzle)) return true;
+						if(recursiveSudokuSolver(puzzle, c, r + 1)) return true;
 					}
 				}
 			}
@@ -83,15 +89,15 @@ public class SudokuGenerator {
 		//if the current space is not empty
 		else {
 			//got to the next move
-			if(r == puzzle.getNumRows() - 1) {
-				return backtrackSudokuSolver(0,c + 1,puzzle);
+			if(r == puzzle.getRows() - 1) {
+				return recursiveSudokuSolver(puzzle, c + 1, 0);
 			} else {
-				return backtrackSudokuSolver(r + 1,c,puzzle);
+				return recursiveSudokuSolver(puzzle, c, r + 1);
 			}
 		}
 		
 		//undo move
-		puzzle.makeSlotEmpty(r, c);
+		puzzle.clearSlot(c, r);
 		
 		//backtrack
 		return false;
