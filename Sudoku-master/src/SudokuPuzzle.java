@@ -11,27 +11,14 @@ public class SudokuPuzzle
 	private final int SECTORHEIGHT;
 	private final String [] VALIDNUMBERS;
 	
-	public SudokuPuzzle(int puzzleType)
+	public SudokuPuzzle()
 	{
-		switch(puzzleType)
-		{
-		//9 by 9 sudoku puzzle
-			case 0:
-				this.ROWS = 9;
-				this.COLS = 9;
-				this.SECTORWIDTH = 3;
-				this.SECTORHEIGHT = 3;
-				this.VALIDNUMBERS = new String[] {"1","2","3","4","5","6","7","8","9"}; 
-				break;
-		//Defaults to 9 by 9 sudoku puzzle
-			default:
-				this.ROWS = 9;
-				this.COLS = 9;
-				this.SECTORWIDTH = 3;
-				this.SECTORHEIGHT = 3;
-				this.VALIDNUMBERS = new String[] {"1","2","3","4","5","6","7","8","9"}; 
-				break;
-		}
+		//create a 9 by 9 sudoku puzzle
+		this.ROWS = 9;
+		this.COLS = 9;
+		this.SECTORWIDTH = 3;
+		this.SECTORHEIGHT = 3;
+		this.VALIDNUMBERS = new String[] {"1","2","3","4","5","6","7","8","9"}; 
 		this.board = new String[COLS][ROWS];
 		this.mutableSlots = new boolean[COLS][ROWS];
 		initializeBoard();

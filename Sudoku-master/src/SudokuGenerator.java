@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class SudokuGenerator 
 {
-	public SudokuPuzzle generateRandomSudoku(int puzzleType) 
+	public SudokuPuzzle generateRandomSudoku() 
 	{
-		SudokuPuzzle puzzle = new SudokuPuzzle(puzzleType);
+		SudokuPuzzle puzzle = new SudokuPuzzle();
 		SudokuPuzzle copy = new SudokuPuzzle(puzzle);
 		
 		Random randomGenerator = new Random();
@@ -22,7 +22,6 @@ public class SudokuGenerator
 			notUsedValidValues.remove(randomValue);
 		}
 		
-		//Bottleneck here need to improve this so that way 16x16 puzzles can be generated
 		recursiveSudokuSolver(copy, 0, 0);
 		
 		int numberOfValuesToKeep = (int)(0.33333*(copy.getRows()*copy.getRows()));

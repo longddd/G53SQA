@@ -14,11 +14,12 @@ import java.awt.font.FontRenderContext;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class SudokuPanel extends JPanel 
 {
-
+	private SudokuFrame frame;
 	private SudokuPuzzle puzzle;
 	private int currentlySelectedCol;
 	private int currentlySelectedRow;
@@ -26,11 +27,13 @@ public class SudokuPanel extends JPanel
 	private int usedHeight;
 	private int fontSize;
 	
-	public SudokuPanel() 
+	public SudokuPanel(SudokuFrame frame) 
 	{
-		this.setPreferredSize(new Dimension(540,450));
+		//this.setPreferredSize(new Dimension(540,450));
+		this.setPreferredSize(new Dimension(800,600));
 		this.addMouseListener(new SudokuPanelMouseAdapter());
-		this.puzzle = new SudokuGenerator().generateRandomSudoku(0);
+		this.frame = frame;
+		this.puzzle = new SudokuGenerator().generateRandomSudoku();
 		currentlySelectedCol = -1;
 		currentlySelectedRow = -1;
 		usedWidth = 0;
@@ -64,7 +67,19 @@ public class SudokuPanel extends JPanel
 		usedWidth = (this.getWidth()/puzzle.getCols())*puzzle.getCols();
 		usedHeight = (this.getHeight()/puzzle.getRows())*puzzle.getRows();
 		
-		g2d.fillRect(0, 0,usedWidth,usedHeight);
+		//
+//		g2d.setColor(Color.lightGray);
+		for(int i=0; i<puzzle.getRows();i++) {
+			for(int j=0; j<puzzle.getCols();j++) {
+				if(!puzzle.isSlotMutable(j, i)) {
+					g2d.setColor(Color.lightGray);
+					g2d.fillRect(j * slotWidth, i * slotHeight,slotWidth,slotHeight);
+				}else {
+					g2d.setColor(Color.WHITE);
+					g2d.fillRect(j * slotWidth, i * slotHeight,slotWidth,slotHeight);
+				}
+			}
+		}
 		
 		g2d.setColor(new Color(0.0f,0.0f,0.0f));
 		for(int x = 0;x <= usedWidth;x+=slotWidth) 
@@ -113,8 +128,10 @@ public class SudokuPanel extends JPanel
 				}
 			}
 		}
+		
 		if(currentlySelectedCol != -1 && currentlySelectedRow != -1) 
 		{
+			//here to change the color of selected box
 			g2d.setColor(new Color(0.0f,0.0f,1.0f,0.3f));
 			g2d.fillRect(currentlySelectedCol * slotWidth,currentlySelectedRow * slotHeight,slotWidth,slotHeight);
 		}
@@ -122,9 +139,14 @@ public class SudokuPanel extends JPanel
 	
 	public void messageFromNumActionListener(String buttonValue) 
 	{
-		if(currentlySelectedCol != -1 && currentlySelectedRow != -1) {
+		if(currentlySelectedCol != -1 && currentlySelectedRow != -1) 
+		{
 			puzzle.makeMove(buttonValue, currentlySelectedCol, currentlySelectedRow, true);
 			repaint();
+			if(puzzle.boardFull())
+			{
+				JOptionPane.showMessageDialog(null, "You Win!\nYour time was: "+(this.frame.getElapsedTime()/60)+"minutes and "+(this.frame.getElapsedTime()%60)+"seconds");
+			}
 		}
 	}
 	
