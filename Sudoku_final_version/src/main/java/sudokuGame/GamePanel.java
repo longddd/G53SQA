@@ -162,7 +162,7 @@ public class GamePanel extends JPanel
 			if(currentlyCol != -1 && currentlyRow != -1) {
 				puzzle.makeMove(((JButton) e.getSource()).getText(), currentlyCol, currentlyRow, true);
 				repaint();
-				//checkWin();
+				checkWin();
 			}
 		}
 	}
