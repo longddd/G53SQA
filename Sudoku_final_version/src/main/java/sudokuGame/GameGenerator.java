@@ -26,7 +26,7 @@ public class GameGenerator
 		//solve the puzzle
 		recursiveSudokuSolver(copy, 0, 0);
 		
-		//determine how hard the game is, i.e. game gets easier as this value gets lower
+		//determine how hard the game is, i.e. game gets easier as this value gets higher
 		double hardness = 0.35;
 		int valuesToKeep = (int)(hardness*(copy.getRows()*copy.getRows()));
 		//only put some answers according to the hardness
