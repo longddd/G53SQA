@@ -161,7 +161,6 @@ public class GamePuzzle
 	
 	public boolean isSlotAvailable(int col,int row) 
 	{
-		 //return (this.inRange(col,row) && this.board[col][row].equals("") && this.isSlotMutable(col, row));
 		return (this.inRange(col,row) && this.board[col][row].equals("") && this.isSlotMutable(col, row));
 	}
 	
@@ -234,4 +233,10 @@ public class GamePuzzle
 			}
 		}
 	}
+
+	public void setBoard(String[][] board) {
+		this.board = board;
+	}
+	
+	
 }
